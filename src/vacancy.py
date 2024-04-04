@@ -8,24 +8,24 @@ class Vacancy:
     которыми инициализируются его атрибуты.
     """
 
-    v_id: str
-    name: str
-    salary: int
-    key_skills: List[str]
-    experience: Optional[str]
-    schedule: Optional[str]
-    employer: Optional[str]
+    __v_id: str
+    __name: str
+    __salary: int
+    __key_skills: List[str]
+    __experience: Optional[str]
+    __schedule: Optional[str]
+    __employer: Optional[str]
 
     def __init__(self, v_id: str, name: str, key_skills: List[str] = None, salary: int = None, experience: str = None,
                  schedule: str = None, employer: str = None):
         self._check_values(v_id, name, key_skills, salary, experience, schedule, employer)
-        self.v_id = v_id
-        self.name = name
-        self.key_skills = [] if key_skills is None else copy.deepcopy(key_skills)
-        self.salary = 0 if salary is None else salary
-        self.experience = experience
-        self.schedule = schedule
-        self.employer = employer
+        self.__v_id = v_id
+        self.__name = name
+        self.__key_skills = [] if key_skills is None else copy.deepcopy(key_skills)
+        self.__salary = 0 if salary is None else salary
+        self.__experience = experience
+        self.__schedule = schedule
+        self.__employer = employer
 
     @staticmethod
     def _check_values(v_id: str, name: str, key_skills: Optional[List[str]], salary: Optional[int],
@@ -52,40 +52,40 @@ class Vacancy:
     def __lt__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary < other.salary
+        return self.__salary < other.__salary
 
     def __eq__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary == other.salary
+        return self.__salary == other.__salary
 
     def __ne__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary != other.salary
+        return self.__salary != other.__salary
 
     def __le__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary <= other.salary
+        return self.__salary <= other.__salary
 
     def __ge__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary >= other.salary
+        return self.__salary >= other.__salary
 
     def __gt__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
             raise ValueError('Сравнение вакансии с другим типом невозможно')
-        return self.salary > other.salary
+        return self.__salary > other.__salary
 
     def __str__(self):
-        experience_str = '' if self.experience is None else f', опыт работы: {self.experience}'
-        schedule_str = '' if self.schedule is None else f', график работы: {self.schedule}'
-        salary_str = 'зарплата не указана' if self.salary == 0 else f'зарплата от {self.salary} руб.'
-        key_skills = '' if not self.key_skills else f', ключевые навыки: {", ".join(self.key_skills)}'
-        employer_str = '' if not self.employer else f', работодатель: {self.employer}'
-        return f"Вакансия: '{self.name}', {salary_str}{employer_str}{experience_str}{schedule_str}{key_skills}.\n"
+        experience_str = '' if self.__experience is None else f', опыт работы: {self.__experience}'
+        schedule_str = '' if self.__schedule is None else f', график работы: {self.__schedule}'
+        salary_str = 'зарплата не указана' if self.__salary == 0 else f'зарплата от {self.__salary} руб.'
+        key_skills = '' if not self.__key_skills else f', ключевые навыки: {", ".join(self.__key_skills)}'
+        employer_str = '' if not self.__employer else f', работодатель: {self.__employer}'
+        return f"Вакансия: '{self.__name}', {salary_str}{employer_str}{experience_str}{schedule_str}{key_skills}.\n"
 
     @classmethod
     # КАК В АННОТАЦИИ ИСПОЛЬЗОВАТЬ cls а не 'VACANCY'?
@@ -114,4 +114,13 @@ class Vacancy:
 
     def to_dict(self):
         '''преобразует объект в словарь'''
-        return self.__dict__
+        suffix = '__'
+        return {key if suffix not in key else key[key.index(suffix):]: value for key, value in self.__dict__.items()}
+
+    @property
+    def salary(self):
+        return self.__salary
+
+    @property
+    def name(self):
+        return self.__name
