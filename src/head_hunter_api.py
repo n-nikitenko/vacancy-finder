@@ -1,7 +1,5 @@
 import copy
 
-from requests import ConnectTimeout, ReadTimeout
-
 from src.base_api import BaseAPI
 import requests
 
@@ -25,17 +23,21 @@ class HeadHunterAPI(BaseAPI):
         self.__vacancies.clear()
         self.__params['text'] = key_phrase
         self.__params['page'] = 0
-        while self.__params.get('page') != 20:  # todo: подставить реальное количество страниц
+        self.__params['currency'] = 'RUR'
+        pages = 20
+        while self.__params.get('page') < pages:
             try:
                 response = requests.get(self.__base_url, headers=self.__headers, params=self.__params, timeout=1)
             except requests.exceptions.Timeout as e:
-                print("Истекло время ожидания ответа сервера. Попробуйте позже.")  # todo: throw Exception
+                print("Истекло время ожидания ответа сервера. Попробуйте позже.")  # todo: уточнить бизнес-логику
                 return copy.deepcopy(self.__vacancies)
             else:
                 if response.status_code == 200:
-                    vacancies = response.json()['items']
+                    response_json = response.json()
+                    pages = response_json['pages']
+                    vacancies = response_json['items']
                     self.__vacancies.extend(vacancies)
                     self.__params['page'] += 1
-                else:  # todo: throw exception or process errors
+                else:  # todo: уточнить бизнес-логику
                     return copy.deepcopy(self.__vacancies)
         return copy.deepcopy(self.__vacancies)
