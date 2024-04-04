@@ -1,6 +1,6 @@
-from src.functions import filter_vacancies, get_vacancies_by_salary, sort_vacancies, get_top_vacancies, print_vacancies
+from src.functions import print_vacancies
 from src.head_hunter_api import HeadHunterAPI
-from src.json_saver import JSONSaver
+from src.json_vacancy_storage import JSONVacancyStorage
 from src.vacancy import Vacancy
 
 
@@ -17,26 +17,22 @@ def user_interaction():
     print("\nПолучение вакансий с сервера. Пожалуйста, подождите.")
 
     hh_vacancies = hh_api.get_vacancies(search_query)
+
     vacancies_list = Vacancy.cast_to_object_list(hh_vacancies)
 
-    print("\nФильтрация вакансий по ключевым словам.\n")
-    filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
+    json_storage = JSONVacancyStorage()
+    print("\nСохранение вакансий.")
 
-    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
+    for vacancy in vacancies_list:
+        json_storage.add_vacancy(vacancy)
 
-    top_vacancies = get_top_vacancies(ranged_vacancies, top_n)
+    print("\nФильтрация вакансий.")
+    filtered_vacancies = json_storage.filter_vacancies(filter_words, salary_range, top_n)
 
-    json_saver = JSONSaver()
-
-    if len(top_vacancies) == 0:
+    if len(filtered_vacancies) == 0:
         print("\nНе найдено вакансий,удовлетворяющих заданным условиям.")
     else:
-        print_vacancies(top_vacancies)
-
-        print("\nСохранение вакансий.")
-
-        for vacancy in top_vacancies:
-            json_saver.add_vacancy(vacancy)
+        print_vacancies(filtered_vacancies)
 
 
 if __name__ == "__main__":
