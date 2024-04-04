@@ -25,7 +25,7 @@ class HeadHunterAPI(BaseAPI):
         self.__vacancies.clear()
         self.__params['text'] = key_phrase
         self.__params['page'] = 0
-        while self.__params.get('page') != 1:
+        while self.__params.get('page') != 20:  # todo: подставить реальное количество страниц
             try:
                 response = requests.get(self.__base_url, headers=self.__headers, params=self.__params, timeout=1)
             except requests.exceptions.Timeout as e:
