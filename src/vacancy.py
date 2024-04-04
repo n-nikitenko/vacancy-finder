@@ -8,24 +8,32 @@ class Vacancy:
     которыми инициализируются его атрибуты.
     """
 
+    v_id: str
     name: str
     salary: int
     key_skills: List[str]
     experience: Optional[str]
     schedule: Optional[str]
+    employer: Optional[str]
 
-    def __init__(self, name, key_skills=None, salary=None, experience=None, schedule=None):
-        self._check_values(name, key_skills, salary, experience, schedule)
+    def __init__(self, v_id: str, name: str, key_skills: List[str] = None, salary: int = None, experience: str = None,
+                 schedule: str = None, employer: str = None):
+        self._check_values(v_id, name, key_skills, salary, experience, schedule, employer)
+        self.v_id = v_id
         self.name = name
         self.key_skills = [] if key_skills is None else copy.deepcopy(key_skills)
         self.salary = 0 if salary is None else salary
         self.experience = experience
         self.schedule = schedule
+        self.employer = employer
 
     @staticmethod
-    def _check_values(name, key_skills=None, salary=None, experience=None, schedule=None):
+    def _check_values(v_id: str, name: str, key_skills: Optional[List[str]], salary: Optional[int],
+                      experience: Optional[str], schedule: Optional[str], employer: Optional[str]):
         """метод валидации значений атрибутов экземпляра класса Vacancy"""
 
+        if type(v_id) is not str:
+            raise ValueError('id должно быть строкой')
         if type(name) is not str:
             raise ValueError('name должно быть строкой')
         if type(key_skills) not in [list, type(None)]:
@@ -38,6 +46,8 @@ class Vacancy:
             raise ValueError('experience должно быть строкой')
         if type(schedule) not in [str, type(None)]:
             raise ValueError('schedule должно быть строкой')
+        if type(employer) not in [str, type(None)]:
+            raise ValueError('employer должно быть строкой')
 
     def __lt__(self, other: 'Vacancy') -> bool:
         if not isinstance(other, self.__class__):
@@ -73,5 +83,35 @@ class Vacancy:
         experience_str = '' if self.experience is None else f', опыт работы: {self.experience}'
         schedule_str = '' if self.schedule is None else f', график работы: {self.schedule}'
         salary_str = 'зарплата не указана' if self.salary == 0 else f'зарплата от {self.salary} руб.'
-        key_skills = '' if self.schedule is None else f', ключевые навыки: {", ".join(self.key_skills)}'
-        return f"\nВакансия: '{self.name}', {salary_str}{experience_str}{schedule_str}{key_skills}\n\n"
+        key_skills = '' if not self.key_skills else f', ключевые навыки: {", ".join(self.key_skills)}'
+        employer_str = '' if not self.employer else f', работодатель: {self.employer}'
+        return f"Вакансия: '{self.name}', {salary_str}{employer_str}{experience_str}{schedule_str}{key_skills}.\n"
+
+    @classmethod
+    # КАК В АННОТАЦИИ ИСПОЛЬЗОВАТЬ cls а не 'VACANCY'?
+    def cast_to_object_list(cls, v_json_list: List[dict]) -> List['Vacancy']:
+        """преобразует список словарей, содержащих данные о вакансии, полученных с сервера в список объектов вакансий"""
+        vacancies: List['Vacancy'] = []
+        for v in v_json_list:
+            v_id = v.get('id', '')
+            name = v.get('name', '')
+            key_skills = [skill['name'] for skill in v.get('key_skills', [])]
+
+            salary_obj = v.get('salary')
+            salary = salary_obj['from'] if salary_obj is not None else None
+
+            experience_obj = v.get('experience')
+            experience = experience_obj['name'] if experience_obj is not None else None
+
+            schedule_obj = v.get('schedule')
+            schedule = schedule_obj['name'] if schedule_obj is not None else None
+
+            employer_obj = v.get('employer')
+            employer = employer_obj['name'] if employer_obj is not None else None
+
+            vacancies.append(cls(v_id, name, key_skills, salary, experience, schedule, employer))
+        return vacancies
+
+    def to_dict(self):
+        '''преобразует объект в словарь'''
+        return self.__dict__
