@@ -115,7 +115,7 @@ class Vacancy:
     def to_dict(self):
         '''преобразует объект в словарь'''
         suffix = '__'
-        return {key if suffix not in key else key[key.index(suffix):]: value for key, value in self.__dict__.items()}
+        return {key if suffix not in key else key[key.index(suffix)+2:]: value for key, value in self.__dict__.items()}
 
     @property
     def salary(self):
