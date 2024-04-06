@@ -16,6 +16,8 @@ class Vacancy:
     __schedule: Optional[str]
     __employer: Optional[str]
 
+    __slots__ = ['__external_id', '__name', '__salary', '__key_skills', '__experience', '__schedule', '__employer']
+
     def __init__(self, external_id: str, name: str, key_skills: List[str] = None, salary: int = None,
                  experience: str = None, schedule: str = None, employer: str = None):
         self._check_values(external_id, name, key_skills, salary, experience, schedule, employer)
@@ -115,7 +117,8 @@ class Vacancy:
     def to_dict(self):
         '''преобразует объект в словарь'''
         suffix = '__'
-        return {key if suffix not in key else key[key.index(suffix)+2:]: value for key, value in self.__dict__.items()}
+        return {key if suffix not in key else key[key.index(suffix) + 2:]: getattr(self, key)
+                if suffix not in key else getattr(self, f'_{self.__class__.__name__}{key}') for key in self.__slots__}
 
     @property
     def salary(self):
