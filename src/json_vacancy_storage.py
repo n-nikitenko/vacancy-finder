@@ -14,6 +14,7 @@ class JSONVacancyStorage(BaseVacancyStorage):
     def __init__(self):
         """конструктор. создает json-файл, если он не существует. Очищает содержимое json-файла, если он существует."""
         self.path = os.path.join("data", "vacancies.json")
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
         mode = 'w+' if os.path.exists(self.path) else 'x+'
         with open(self.path, mode, encoding='utf-8') as f:
             dump([], f)
@@ -27,7 +28,7 @@ class JSONVacancyStorage(BaseVacancyStorage):
     def _write(self, vacancies: List[dict]):
         """записывает json в файл"""
         with open(self.path, 'w', encoding='utf-8') as f:
-            dump(vacancies, f)
+            dump(vacancies, f, ensure_ascii=False)
 
     def add_vacancy(self, vacancy: Vacancy):
         """добавляет вакансию в файл"""

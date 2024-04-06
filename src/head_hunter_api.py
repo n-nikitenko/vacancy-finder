@@ -1,4 +1,5 @@
 import copy
+from typing import List
 
 from src.base_api import BaseAPI
 import requests
@@ -19,7 +20,8 @@ class HeadHunterAPI(BaseAPI):
         self.__params = {'text': '', 'page': 0, 'per_page': 100}
         self.__vacancies = []
 
-    def get_vacancies(self, key_phrase: str) -> list:
+    def get_vacancies(self, key_phrase: str) -> List[dict]:
+        """возвращает список вакансий по ключевой фразе, полученный по http c сервера, указанного в self.__base_url"""
         self.__vacancies.clear()
         self.__params['text'] = key_phrase
         self.__params['page'] = 0
