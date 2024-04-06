@@ -8,7 +8,7 @@ class Vacancy:
     которыми инициализируются его атрибуты.
     """
 
-    __v_id: str
+    __external_id: str
     __name: str
     __salary: int
     __key_skills: List[str]
@@ -16,10 +16,10 @@ class Vacancy:
     __schedule: Optional[str]
     __employer: Optional[str]
 
-    def __init__(self, v_id: str, name: str, key_skills: List[str] = None, salary: int = None, experience: str = None,
-                 schedule: str = None, employer: str = None):
-        self._check_values(v_id, name, key_skills, salary, experience, schedule, employer)
-        self.__v_id = v_id
+    def __init__(self, external_id: str, name: str, key_skills: List[str] = None, salary: int = None,
+                 experience: str = None, schedule: str = None, employer: str = None):
+        self._check_values(external_id, name, key_skills, salary, experience, schedule, employer)
+        self.__external_id = external_id
         self.__name = name
         self.__key_skills = [] if key_skills is None else copy.deepcopy(key_skills)
         self.__salary = 0 if salary is None else salary
@@ -28,11 +28,11 @@ class Vacancy:
         self.__employer = employer
 
     @staticmethod
-    def _check_values(v_id: str, name: str, key_skills: Optional[List[str]], salary: Optional[int],
+    def _check_values(external_id: str, name: str, key_skills: Optional[List[str]], salary: Optional[int],
                       experience: Optional[str], schedule: Optional[str], employer: Optional[str]):
         """метод валидации значений атрибутов экземпляра класса Vacancy"""
 
-        if type(v_id) is not str:
+        if type(external_id) is not str:
             raise ValueError('id должно быть строкой')
         if type(name) is not str:
             raise ValueError('name должно быть строкой')
